@@ -1,14 +1,23 @@
-# VGBD Unpacker (decrypt + unpack)
+# DecryptCFG (Windows .exe via GitHub Actions)
 
-This repo builds Windows `.exe` using GitHub Actions (PyInstaller).
+Этот репозиторий собирает Windows `.exe` из Python-скрипта с GUI (Tkinter).
 
-## Local run
+## Как получить .exe
+
+1) Залей эти файлы в новый репозиторий GitHub (ветка `main`).
+2) Открой вкладку **Actions** → **Build Windows EXE** → **Run workflow**.
+3) Дождись завершения job `build`.
+4) Скачай артефакт **DecryptCFG-windows** — внутри будет `DecryptCFG.exe`.
+
+## Локальная сборка (если надо)
+
 ```bash
-pip install -r requirements.txt
-python vgbd_cli.py some.img -o out_dir --keep-paths
-python vgbd_gui.py
+python -m pip install -r requirements.txt
+pyinstaller --onefile --windowed decrypt_gui.py --name DecryptCFG
 ```
+Готовый файл будет в `dist/DecryptCFG.exe`.
 
-## Download the EXE
-- Go to **Actions** → open the latest run → **Artifacts** → download the `vgbd-unpacker-windows` artifact.
-- Or push a tag like `v1.0.0` to get a GitHub Release with attached `.exe`.
+## Запуск
+
+- Просто запускаешь `DecryptCFG.exe`, выбираешь входной `.cfg` и папку, жмёшь "Декодировать".
+- Результат сохраняется как `<имя>_decrypted.cfg` в выбранной папке.
