@@ -17,3 +17,11 @@ else()
     find_package(ZSTD REQUIRED)
     target_link_libraries(vgbd_unpack_decode PRIVATE ZSTD::ZSTD)
 endif()
+
+    # On MinGW/GNU toolchains, statically link libstdc++ and libgcc so the
+    # built executable doesn't depend on libstdc++-6.dll at runtime.
+    if (NOT MSVC)
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            target_link_options(vgbd_unpack_decode PRIVATE "-static-libstdc++" "-static-libgcc")
+        endif()
+    endif()
