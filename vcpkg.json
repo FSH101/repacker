@@ -1,6 +1,7 @@
 {
   "name": "vgbd-unpack-decode",
   "version-string": "0.1.0",
+  "builtin-baseline": "594ad8871e1e8e45f8e626c015fd611163430207",
   "dependencies": [
     "zstd"
   ]
