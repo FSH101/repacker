@@ -1,0 +1,49 @@
+name: build-windows-exe
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Installs CMake + Ninja (recommended for predictable builds)
+      - name: Get CMake + Ninja
+        uses: lukka/get-cmake@latest
+
+      # Sets up vcpkg (and caching). vcpkg will actually install deps when CMake
+      # runs with the vcpkg toolchain and a vcpkg.json exists in the source root.
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: '**/vcpkg.json'
+
+      - name: Configure (Release)
+        shell: pwsh
+        run: >
+          cmake -S . -B build
+          -G "Ninja"
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release
+
+      - name: Collect EXE
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $exe = Get-ChildItem -Path build -Recurse -Filter vgbd_unpack_decode.exe | Select-Object -First 1
+          if (-not $exe) { throw "vgbd_unpack_decode.exe not found in build output" }
+          Copy-Item $exe.FullName dist\
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vgbd_unpack_decode-windows
+          path: dist/vgbd_unpack_decode.exe
